@@ -1,15 +1,21 @@
 
+
 import React from 'react';
-import { HomeIcon, CalendarIcon, CheckCircleIcon } from './icons';
+import { HomeIcon, UserGroupIcon, BoxArchiveIcon, ChartBarIcon, BriefcaseIcon, TrophyIcon } from './icons';
+
+type ActiveView = 'dashboard' | 'providers' | 'inventory' | 'reports' | 'tenants' | 'awards';
 
 interface SidebarProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
+  activeView: ActiveView;
+  setActiveView: (view: ActiveView) => void;
 }
 
-const NavLink: React.FC<{ icon: React.ReactNode; label: string; active?: boolean }> = ({ icon, label, active }) => (
+const NavLink: React.FC<{ icon: React.ReactNode; label: string; active?: boolean; onClick: () => void; }> = ({ icon, label, active, onClick }) => (
     <a
       href="#"
+      onClick={(e) => { e.preventDefault(); onClick(); }}
       className={`flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 ${
         active
           ? 'bg-primary text-white'
@@ -22,7 +28,15 @@ const NavLink: React.FC<{ icon: React.ReactNode; label: string; active?: boolean
   );
   
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeView, setActiveView }) => {
+  
+  const handleLinkClick = (view: ActiveView) => {
+    setActiveView(view);
+    if(window.innerWidth < 1024) { // Close sidebar on mobile after navigation
+        setIsOpen(false);
+    }
+  };
+
   return (
     <>
       {/* Overlay for mobile */}
@@ -47,13 +61,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
         <nav className="flex-1 px-4 py-6">
           <ul className="space-y-2">
             <li>
-              <NavLink icon={<HomeIcon className="w-5 h-5" />} label="Dashboard" active />
+              <NavLink icon={<HomeIcon className="w-5 h-5" />} label="Dashboard" active={activeView === 'dashboard'} onClick={() => handleLinkClick('dashboard')} />
             </li>
             <li>
-              <NavLink icon={<CalendarIcon className="w-5 h-5" />} label="Upcoming Tasks" />
+              <NavLink icon={<UserGroupIcon className="w-5 h-5" />} label="Tenants" active={activeView === 'tenants'} onClick={() => handleLinkClick('tenants')} />
             </li>
             <li>
-              <NavLink icon={<CheckCircleIcon className="w-5 h-5" />} label="Completed Tasks" />
+              <NavLink icon={<BriefcaseIcon className="w-5 h-5" />} label="Service Providers" active={activeView === 'providers'} onClick={() => handleLinkClick('providers')} />
+            </li>
+             <li>
+              <NavLink icon={<BoxArchiveIcon className="w-5 h-5" />} label="Inventory" active={activeView === 'inventory'} onClick={() => handleLinkClick('inventory')} />
+            </li>
+            <li>
+              <NavLink icon={<ChartBarIcon className="w-5 h-5" />} label="Reports" active={activeView === 'reports'} onClick={() => handleLinkClick('reports')} />
+            </li>
+             <li>
+              <NavLink icon={<TrophyIcon className="w-5 h-5" />} label="Awards" active={activeView === 'awards'} onClick={() => handleLinkClick('awards')} />
             </li>
           </ul>
         </nav>

@@ -1,10 +1,11 @@
-
 import React from 'react';
-import { Task, Priority } from '../types';
-import CategoryIcon, { EditIcon, DeleteIcon, CheckCircleIcon } from './icons';
+import { Task, Priority, RecurrenceRule, ServiceProvider, Tenant } from '../types';
+import CategoryIcon, { EditIcon, DeleteIcon, CheckCircleIcon, RepeatIcon, UserIcon, PaperclipIcon, UserGroupIcon, CurrencyDollarIcon } from './icons';
 
 interface TaskCardProps {
   task: Task;
+  serviceProvider?: ServiceProvider;
+  tenant?: Tenant;
   onDelete: (taskId: string) => void;
   onToggleComplete: (taskId: string) => void;
   onEdit: (task: Task) => void;
@@ -16,7 +17,7 @@ const priorityStyles: { [key in Priority]: { bg: string; text: string; border: s
   [Priority.Low]: { bg: 'bg-green-100 dark:bg-green-900/50', text: 'text-green-700 dark:text-green-300', border: 'border-green-500' },
 };
 
-export const TaskCard: React.FC<TaskCardProps> = ({ task, onDelete, onToggleComplete, onEdit }) => {
+export const TaskCard: React.FC<TaskCardProps> = ({ task, serviceProvider, tenant, onDelete, onToggleComplete, onEdit }) => {
   const { bg, text, border } = priorityStyles[task.priority];
   const isOverdue = !task.completed && new Date(task.dueDate) < new Date();
 
@@ -46,33 +47,67 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onDelete, onToggleComp
           </div>
           <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${bg} ${text}`}>{task.priority}</span>
         </div>
-        {task.notes && <p className="text-sm text-gray-600 dark:text-gray-300 mt-3">{task.notes}</p>}
+        {task.notes && <p className="text-sm text-gray-600 dark:text-gray-300 mt-3 break-words">{task.notes}</p>}
       </div>
 
-      <div className="bg-gray-50 dark:bg-slate-800/50 px-5 py-3 rounded-b-lg">
-        <div className="flex justify-between items-center">
-          <div className="text-sm">
+      <div className="bg-gray-50 dark:bg-slate-800/50 px-5 py-3 rounded-b-lg mt-auto">
+        <div className="flex justify-between items-center mb-2">
+          <div className="text-sm space-y-1">
             {task.completed ? (
-              <p className="text-green-600 dark:text-green-400 font-medium">Completed: {formattedCompletedDate}</p>
+                 <p className="text-green-600 dark:text-green-400 font-medium">Completed: {formattedCompletedDate}</p>
             ) : (
-              <p className={`font-medium ${isOverdue ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-300'}`}>
-                Due: {formattedDueDate}
-              </p>
+                <p className={`font-medium ${isOverdue ? 'text-red-600 dark:text-red-400' : 'text-gray-700 dark:text-gray-300'}`}>
+                    Due: {formattedDueDate}
+                </p>
+            )}
+            {tenant && (
+                <div className="flex items-center space-x-1.5 text-gray-500 dark:text-gray-400">
+                    <UserIcon className="w-4 h-4" />
+                    <span>{tenant.name}</span>
+                </div>
+            )}
+            {serviceProvider && (
+                <div className="flex items-center space-x-1.5 text-gray-500 dark:text-gray-400">
+                    <UserGroupIcon className="w-4 h-4" />
+                    <span>{serviceProvider.name}</span>
+                </div>
+            )}
+            {task.completed && task.cost && (
+                 <div className="flex items-center space-x-1.5 text-gray-600 dark:text-gray-300 font-semibold">
+                    <CurrencyDollarIcon className="w-4 h-4" />
+                    <span>{task.cost.toFixed(2)}</span>
+                </div>
             )}
           </div>
-          <div className="flex items-center space-x-2">
-            {!task.completed && (
-                <button onClick={() => onToggleComplete(task.id)} className="p-1.5 text-green-500 hover:text-green-700 dark:hover:text-green-300 rounded-full hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors" title="Mark as complete">
-                    <CheckCircleIcon className="w-5 h-5" />
+          <div className="flex items-center space-x-2 text-gray-500 dark:text-gray-400">
+            {task.recurrence && task.recurrence !== RecurrenceRule.None && (
+                <RepeatIcon className="w-5 h-5" title={`Repeats ${task.recurrence}`} />
+            )}
+            {task.attachments && task.attachments.length > 0 && (
+                 <div className="flex items-center space-x-1" title={`${task.attachments.length} attachments`}>
+                    <PaperclipIcon className="w-5 h-5" />
+                    <span className="text-xs font-bold">{task.attachments.length}</span>
+                 </div>
+            )}
+          </div>
+        </div>
+        
+        <div className="flex justify-between items-center border-t dark:border-slate-700 pt-3">
+            <button onClick={() => onToggleComplete(task.id)} className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
+                task.completed ? 'text-yellow-600 hover:text-yellow-700 dark:text-yellow-400 dark:hover:text-yellow-300' 
+                                : 'text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300'
+            }`}>
+                <CheckCircleIcon className="w-5 h-5" />
+                <span>{task.completed ? 'Undo' : 'Complete'}</span>
+            </button>
+            <div className="flex items-center space-x-2">
+                <button onClick={() => onEdit(task)} className="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors" aria-label="Edit Task">
+                    <EditIcon className="w-5 h-5" />
                 </button>
-            )}
-            <button onClick={() => onEdit(task)} className="p-1.5 text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors" title="Edit Task">
-              <EditIcon className="w-5 h-5" />
-            </button>
-            <button onClick={() => onDelete(task.id)} className="p-1.5 text-gray-500 hover:text-red-600 dark:hover:text-red-400 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors" title="Delete Task">
-              <DeleteIcon className="w-5 h-5" />
-            </button>
-          </div>
+                <button onClick={() => onDelete(task.id)} className="text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors" aria-label="Delete Task">
+                    <DeleteIcon className="w-5 h-5" />
+                </button>
+            </div>
         </div>
       </div>
     </div>
