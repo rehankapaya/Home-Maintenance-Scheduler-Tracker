@@ -14,8 +14,29 @@ export enum Category {
   General = 'General',
 }
 
+export enum UserRole {
+  Homeowner = 'Homeowner',
+  Tenant = 'Tenant',
+  PropertyManager = 'Property Manager',
+}
+
+export interface Property {
+  id: string;
+  name: string;
+  address: string;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  properties: Property[];
+}
+
 export interface Task {
   id: string;
+  propertyId: string;
   name: string;
   category: Category;
   priority: Priority;

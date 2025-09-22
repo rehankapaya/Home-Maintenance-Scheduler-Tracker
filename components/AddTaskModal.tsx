@@ -6,7 +6,7 @@ import { CATEGORY_OPTIONS, PRIORITY_OPTIONS } from '../constants';
 interface AddTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddTask: (task: Task) => void;
+  onAddTask: (task: Omit<Task, 'id' | 'propertyId' | 'completed' | 'completedDate'>) => void;
   onEditTask: (task: Task) => void;
   taskToEdit?: Task;
 }
@@ -46,16 +46,13 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onA
     if (taskToEdit) {
       onEditTask({ ...taskToEdit, name, category, priority, dueDate, notes });
     } else {
-      const newTask: Task = {
-        id: `task-${Date.now()}`,
+      onAddTask({
         name,
         category,
         priority,
         dueDate,
         notes,
-        completed: false,
-      };
-      onAddTask(newTask);
+      });
     }
   };
 

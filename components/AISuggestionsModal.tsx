@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { generateMaintenanceTasks } from '../services/geminiService';
 import { SuggestedTask, Task, Category, Priority } from '../types';
@@ -7,7 +6,8 @@ import CategoryIcon from './icons';
 interface AISuggestionsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddTasks: (tasks: Omit<Task, 'id' | 'completed'>[]) => void;
+  // FIX: Updated Omit to exclude properties that are added in the parent component.
+  onAddTasks: (tasks: Omit<Task, 'id' | 'completed' | 'propertyId' | 'completedDate'>[]) => void;
 }
 
 export const AISuggestionsModal: React.FC<AISuggestionsModalProps> = ({ isOpen, onClose, onAddTasks }) => {
