@@ -1,7 +1,8 @@
+
 import React from 'react';
 import { Task, ServiceProvider, PersonalizedRecommendation, Tenant } from '../types';
 import { TaskCard } from './TaskCard';
-import { ExclamationTriangleIcon, ClockIcon, CheckCircleIcon, CalendarIcon, LightBulbIcon, PlusIcon, XMarkIcon } from './icons';
+import { ExclamationTriangleIcon, ClockIcon, CheckCircleIcon, CalendarIcon, LightBulbIcon, PlusIcon, XMarkIcon, HomeIcon } from './icons';
 
 interface DashboardProps {
   tasks: Task[];
@@ -15,6 +16,8 @@ interface DashboardProps {
   onDismissRecommendation: (taskName: string) => void;
   onAddTaskFromRecommendation: (rec: PersonalizedRecommendation) => void;
   isOnline: boolean;
+  hasProperties: boolean;
+  onAddProperty: () => void;
 }
 
 const RecommendationCard: React.FC<{
@@ -101,8 +104,30 @@ const StatsCard: React.FC<{ icon: React.ReactNode; label: string; value: number 
 export const Dashboard: React.FC<DashboardProps> = ({ 
     tasks, serviceProviders, tenants, onDelete, onToggleComplete, onEdit, 
     recommendations, isRecsLoading, onDismissRecommendation, onAddTaskFromRecommendation,
-    isOnline
+    isOnline, hasProperties, onAddProperty
 }) => {
+  if (!hasProperties) {
+    return (
+        <div className="text-center py-16 px-6 bg-white dark:bg-dark-card rounded-lg shadow-sm flex flex-col items-center h-full justify-center">
+            <HomeIcon className="w-20 h-20 mx-auto text-gray-300 dark:text-gray-600" />
+            <h2 className="mt-4 text-2xl font-bold text-gray-800 dark:text-white">Welcome to Homely!</h2>
+            <p className="mt-2 text-lg text-gray-500 dark:text-gray-400">
+                It looks like you don't have any properties yet.
+            </p>
+             <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">
+                Add a property to start managing your maintenance tasks.
+            </p>
+            <button
+                onClick={onAddProperty}
+                className="mt-8 flex items-center mx-auto space-x-2 px-6 py-3 text-base font-medium text-white bg-primary rounded-md hover:bg-indigo-700 transition-colors shadow-sm"
+            >
+                <PlusIcon className="w-5 h-5" />
+                <span>Add Your First Property</span>
+            </button>
+        </div>
+    );
+  }
+
   const upcomingTasks = tasks.filter(task => !task.completed).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   const completedTasks = tasks.filter(task => task.completed).sort((a, b) => new Date(b.completedDate!).getTime() - new Date(a.completedDate!).getTime());
   

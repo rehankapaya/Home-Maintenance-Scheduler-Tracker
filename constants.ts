@@ -1,4 +1,5 @@
 
+
 import { Task, Category, Priority, User, UserRole, Property, RecurrenceRule, ServiceProvider, InventoryItem, InventoryCategory, Attachment, Tenant, Badge } from './types';
 
 export const ALL_BADGES: Badge[] = [
@@ -12,6 +13,7 @@ export const MOCK_USER: User = {
   id: 'user-1',
   name: 'Alex Doe',
   email: 'alex.doe@example.com',
+  password: 'password123',
   role: UserRole.PropertyManager,
   properties: [
     { id: 'prop-1', name: 'Main Street Home', address: '123 Main St, Anytown, USA', description: 'A 3-bedroom, 2-bathroom house in a temperate climate with a small yard. Located in a suburban area.' },

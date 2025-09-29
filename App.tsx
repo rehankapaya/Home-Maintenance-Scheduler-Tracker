@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
@@ -7,7 +8,7 @@ import { AISuggestionsModal } from './components/AISuggestionsModal';
 import { LoginScreen } from './components/LoginScreen';
 import { ServiceProviders } from './components/ServiceProviders';
 import { Inventory } from './components/Inventory';
-import { Task, User, RecurrenceRule, AppNotification, NotificationType, ServiceProvider, InventoryItem, Attachment, Property, PersonalizedRecommendation, Tenant, Priority, Badge, SyncStatus } from './types';
+import { Task, User, RecurrenceRule, AppNotification, NotificationType, ServiceProvider, InventoryItem, Attachment, Property, PersonalizedRecommendation, Tenant, Priority, Badge, SyncStatus, UserRole } from './types';
 import { INITIAL_TASKS, MOCK_USER, MOCK_SERVICE_PROVIDERS, MOCK_INVENTORY_ITEMS, MOCK_TENANTS, ALL_BADGES } from './constants';
 import { ServiceProviderModal } from './components/ServiceProviderModal';
 import { InventoryItemModal } from './components/InventoryItemModal';
@@ -43,7 +44,14 @@ const App: React.FC = () => {
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>(() => getInitialState('homely-inventoryItems', MOCK_INVENTORY_ITEMS));
   const [tenants, setTenants] = useState<Tenant[]>(() => getInitialState('homely-tenants', MOCK_TENANTS));
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => getInitialState('homely-isDarkMode', false));
-  const [userStore, setUserStore] = useState<Record<string, User>>(() => getInitialState('homely-userStore', {}));
+  const [userStore, setUserStore] = useState<Record<string, User>>(() => {
+    const storedUsers = getInitialState<Record<string, User>>('homely-userStore', {});
+    // Ensure the mock user exists for demo purposes if the store is empty
+    if (Object.keys(storedUsers).length === 0) {
+      return { [MOCK_USER.id]: MOCK_USER };
+    }
+    return storedUsers;
+  });
 
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   
@@ -254,12 +262,11 @@ const App: React.FC = () => {
   }, [updateNotifications]);
 
   useEffect(() => {
-     const user = userStore[MOCK_USER.id] || MOCK_USER;
-     setCurrentUser(user);
-     if (user.properties.length > 0 && !selectedPropertyId) {
-        setSelectedPropertyId(user.properties[0].id);
+     // This effect will run when currentUser is set after login.
+     if (currentUser && currentUser.properties.length > 0 && !selectedPropertyId) {
+        setSelectedPropertyId(currentUser.properties[0].id);
      }
-  }, [userStore, selectedPropertyId]);
+  }, [currentUser, selectedPropertyId]);
 
   useEffect(() => {
     if (isDarkMode) document.documentElement.classList.add('dark');
@@ -276,12 +283,36 @@ const App: React.FC = () => {
       setNotifications(prev => prev.map(n => ({ ...n, read: true })));
   };
   
-  const handleLogin = (user: User) => {
-    const userData = userStore[user.id] || user;
-    setCurrentUser(userData);
-    if (userData.properties.length > 0) {
-      setSelectedPropertyId(userData.properties[0].id);
+  const handleLogin = (email: string, password?: string): boolean => {
+    // FIX: Explicitly type `u` as `User` to help TypeScript's type inference.
+    const user = Object.values(userStore).find(
+      (u: User) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
+    );
+
+    if (user) {
+      setCurrentUser(user);
+      if (user.properties.length > 0) {
+        setSelectedPropertyId(user.properties[0].id);
+      } else {
+        setSelectedPropertyId(null);
+      }
+      return true;
     }
+    return false;
+  };
+
+  const handleSignup = (userData: Omit<User, 'id' | 'properties' | 'points' | 'unlockedBadges'>): User => {
+    const newUser: User = {
+        ...userData,
+        id: `user-${Date.now()}`,
+        properties: [],
+        points: 0,
+        unlockedBadges: [],
+    };
+    setUserStore(prev => ({...prev, [newUser.id]: newUser}));
+    setCurrentUser(newUser);
+    setSelectedPropertyId(null);
+    return newUser;
   };
 
   const handleLogout = () => {
@@ -595,7 +626,7 @@ const App: React.FC = () => {
   };
 
   if (!currentUser) {
-    return <LoginScreen onLogin={() => handleLogin(MOCK_USER)} />;
+    return <LoginScreen onLogin={handleLogin} onSignup={handleSignup} />;
   }
 
   const currentProperty = currentUser.properties.find(p => p.id === selectedPropertyId);
@@ -639,6 +670,8 @@ const App: React.FC = () => {
               onDismissRecommendation={handleDismissRecommendation}
               onAddTaskFromRecommendation={handleAddTaskFromRecommendation}
               isOnline={isOnline}
+              hasProperties={currentUser.properties.length > 0}
+              onAddProperty={openAddPropertyModal}
             />
           )}
           {activeView === 'tenants' && (

@@ -21,6 +21,11 @@ export const AISuggestionsModal: React.FC<AISuggestionsModalProps> = ({ isOpen, 
   useEffect(() => {
     if (isOpen) {
       setHomeDescription(currentPropertyDescription);
+      // When the modal opens or the property changes, clear old suggestions
+      // to ensure we don't show stale data and can trigger a new fetch.
+      setSuggestions([]);
+      setSelectedTasks([]);
+      setError(null);
     }
   }, [isOpen, currentPropertyDescription]);
 
