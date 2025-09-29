@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
@@ -19,6 +18,7 @@ import { TenantModal } from './components/TenantModal';
 import { Awards } from './components/Awards';
 import { BadgeUnlockedToast } from './components/BadgeUnlockedToast';
 import { AddPropertyModal } from './components/AddPropertyModal';
+import { ConfirmationModal } from './components/ConfirmationModal';
 
 type ActiveView = 'dashboard' | 'providers' | 'inventory' | 'reports' | 'tenants' | 'awards';
 
@@ -62,6 +62,7 @@ const App: React.FC = () => {
   const [isInventoryModalOpen, setInventoryModalOpen] = useState(false);
   const [isTenantModalOpen, setTenantModalOpen] = useState(false);
   const [isAddPropertyModalOpen, setAddPropertyModalOpen] = useState(false);
+  const [isConfirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false);
   
   // Edit states
   const [taskToEdit, setTaskToEdit] = useState<Task | undefined>(undefined);
@@ -69,6 +70,7 @@ const App: React.FC = () => {
   const [inventoryItemToEdit, setInventoryItemToEdit] = useState<InventoryItem | undefined>(undefined);
   const [tenantToEdit, setTenantToEdit] = useState<Tenant | undefined>(undefined);
   const [initialDataForNewTask, setInitialDataForNewTask] = useState<Partial<Task> | undefined>(undefined);
+  const [propertyToDelete, setPropertyToDelete] = useState<Property | null>(null);
 
 
   // UI States
@@ -327,7 +329,7 @@ const App: React.FC = () => {
     setUserStore(prev => ({ ...prev, [updatedUser.id]: updatedUser }));
   };
 
-  // Add Property
+  // Property Management
   const handleAddProperty = (property: Omit<Property, 'id'>) => {
     const newProperty: Property = {
       ...property,
@@ -346,6 +348,35 @@ const App: React.FC = () => {
 
     setSelectedPropertyId(newProperty.id); // Select the new property
     setAddPropertyModalOpen(false);
+  };
+  
+  const handleOpenDeletePropertyModal = (property: Property) => {
+    setPropertyToDelete(property);
+    setConfirmDeleteModalOpen(true);
+  };
+
+  const handleConfirmDeleteProperty = () => {
+    if (!propertyToDelete || !currentUser) return;
+
+    const updatedProperties = currentUser.properties.filter(p => p.id !== propertyToDelete.id);
+    const updatedUser: User = {
+        ...currentUser,
+        properties: updatedProperties,
+    };
+
+    setTasks(prev => prev.filter(t => t.propertyId !== propertyToDelete.id));
+    setInventoryItems(prev => prev.filter(i => i.propertyId !== propertyToDelete.id));
+    setTenants(prev => prev.filter(t => t.propertyId !== propertyToDelete.id));
+    
+    setCurrentUser(updatedUser);
+    setUserStore(prev => ({ ...prev, [updatedUser.id]: updatedUser }));
+
+    if (selectedPropertyId === propertyToDelete.id) {
+        setSelectedPropertyId(updatedProperties.length > 0 ? updatedProperties[0].id : null);
+    }
+
+    setPropertyToDelete(null);
+    setConfirmDeleteModalOpen(false);
   };
 
   // Task CRUD
@@ -647,6 +678,7 @@ const App: React.FC = () => {
           onAddTaskClick={openAddTaskModal} 
           onAISuggestionsClick={() => setAISuggestionsModalOpen(true)}
           onAddPropertyClick={openAddPropertyModal}
+          onDeletePropertyClick={handleOpenDeletePropertyModal}
           onMenuClick={() => setSidebarOpen(!isSidebarOpen)}
           isDarkMode={isDarkMode}
           onToggleTheme={handleToggleTheme}
@@ -778,6 +810,19 @@ const App: React.FC = () => {
           badge={newlyUnlockedBadge}
           onClose={() => setNewlyUnlockedBadge(null)}
         />
+      )}
+
+      {isConfirmDeleteModalOpen && propertyToDelete && (
+        <ConfirmationModal
+            isOpen={isConfirmDeleteModalOpen}
+            onClose={() => setConfirmDeleteModalOpen(false)}
+            onConfirm={handleConfirmDeleteProperty}
+            title={`Delete Property: ${propertyToDelete.name}`}
+        >
+            Are you sure you want to delete this property? All associated tasks,
+            inventory items, and tenants will be permanently removed. This action
+            cannot be undone.
+        </ConfirmationModal>
       )}
     </div>
   );

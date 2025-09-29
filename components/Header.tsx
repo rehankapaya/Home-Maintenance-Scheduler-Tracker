@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { PlusIcon, WandIcon, MenuIcon, HomeIcon, SunIcon, MoonIcon, UserCircleIcon, ChevronDownIcon, LogoutIcon, BellIcon } from './icons';
+import { PlusIcon, WandIcon, MenuIcon, HomeIcon, SunIcon, MoonIcon, UserCircleIcon, ChevronDownIcon, LogoutIcon, BellIcon, DeleteIcon } from './icons';
 import { User, Property, AppNotification, SyncStatus } from '../types';
 import { NotificationsPopover } from './NotificationsPopover';
 
@@ -12,6 +12,7 @@ interface HeaderProps {
   onAddTaskClick: () => void;
   onAISuggestionsClick: () => void;
   onAddPropertyClick: () => void;
+  onDeletePropertyClick: (property: Property) => void;
   onMenuClick: () => void;
   isDarkMode: boolean;
   onToggleTheme: () => void;
@@ -64,7 +65,7 @@ export const Header: React.FC<HeaderProps> = ({
     user, properties, selectedPropertyId, onSelectProperty, onLogout, 
     onAddTaskClick, onAISuggestionsClick, onMenuClick, isDarkMode, onToggleTheme,
     notifications, notificationPermission, onMarkAllNotificationsAsRead, onRequestNotificationPermission,
-    syncStatus, onAddPropertyClick
+    syncStatus, onAddPropertyClick, onDeletePropertyClick
 }) => {
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
   const [isNotificationsOpen, setNotificationsOpen] = useState(false);
@@ -172,14 +173,22 @@ export const Header: React.FC<HeaderProps> = ({
                     <div className="py-1">
                         <p className="px-4 pt-2 pb-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Properties</p>
                         {properties.map(prop => (
-                            <a
-                                key={prop.id}
-                                href="#"
-                                onClick={(e) => { e.preventDefault(); onSelectProperty(prop.id); setUserMenuOpen(false); }}
-                                className={`block px-4 py-2 text-sm ${selectedPropertyId === prop.id ? 'font-bold text-primary dark:text-indigo-400' : 'text-gray-700 dark:text-gray-300'} hover:bg-gray-100 dark:hover:bg-slate-700`}
-                            >
-                                {prop.name}
-                            </a>
+                            <div key={prop.id} className="group flex items-center justify-between hover:bg-gray-100 dark:hover:bg-slate-700">
+                                <a
+                                    href="#"
+                                    onClick={(e) => { e.preventDefault(); onSelectProperty(prop.id); setUserMenuOpen(false); }}
+                                    className={`flex-grow block px-4 py-2 text-sm ${selectedPropertyId === prop.id ? 'font-bold text-primary dark:text-indigo-400' : 'text-gray-700 dark:text-gray-300'}`}
+                                >
+                                    {prop.name}
+                                </a>
+                                <button
+                                    onClick={() => { onDeletePropertyClick(prop); setUserMenuOpen(false); }}
+                                    className="opacity-0 group-hover:opacity-100 p-2 mr-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-opacity"
+                                    aria-label={`Delete ${prop.name}`}
+                                >
+                                    <DeleteIcon className="w-4 h-4" />
+                                </button>
+                            </div>
                         ))}
                          <button onClick={() => { onAddPropertyClick(); setUserMenuOpen(false); }} className="w-full text-left block px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700">+ Add Property</button>
                     </div>
