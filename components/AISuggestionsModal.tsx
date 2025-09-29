@@ -8,14 +8,21 @@ interface AISuggestionsModalProps {
   onClose: () => void;
   onAddTasks: (tasks: Omit<Task, 'id' | 'completed' | 'propertyId' | 'completedDate'>[]) => void;
   isOnline: boolean;
+  currentPropertyDescription: string;
 }
 
-export const AISuggestionsModal: React.FC<AISuggestionsModalProps> = ({ isOpen, onClose, onAddTasks, isOnline }) => {
-  const [homeDescription, setHomeDescription] = useState('A 3-bedroom, 2-bathroom house in a temperate climate with a small yard.');
+export const AISuggestionsModal: React.FC<AISuggestionsModalProps> = ({ isOpen, onClose, onAddTasks, isOnline, currentPropertyDescription }) => {
+  const [homeDescription, setHomeDescription] = useState('');
   const [suggestions, setSuggestions] = useState<SuggestedTask[]>([]);
   const [selectedTasks, setSelectedTasks] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setHomeDescription(currentPropertyDescription);
+    }
+  }, [isOpen, currentPropertyDescription]);
 
   const handleGenerate = async () => {
     if (!homeDescription.trim() || !isOnline) return;
@@ -36,10 +43,11 @@ export const AISuggestionsModal: React.FC<AISuggestionsModalProps> = ({ isOpen, 
   };
 
   useEffect(() => {
-    if (isOpen && suggestions.length === 0 && !isLoading && !error && isOnline) {
+    if (isOpen && homeDescription && suggestions.length === 0 && !isLoading && !error && isOnline) {
       handleGenerate();
     }
-  }, [isOpen, isOnline]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, homeDescription, isOnline]);
   
   const handleToggleSelection = (index: number) => {
     setSelectedTasks(prev => 

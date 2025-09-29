@@ -11,6 +11,7 @@ interface HeaderProps {
   onLogout: () => void;
   onAddTaskClick: () => void;
   onAISuggestionsClick: () => void;
+  onAddPropertyClick: () => void;
   onMenuClick: () => void;
   isDarkMode: boolean;
   onToggleTheme: () => void;
@@ -63,7 +64,7 @@ export const Header: React.FC<HeaderProps> = ({
     user, properties, selectedPropertyId, onSelectProperty, onLogout, 
     onAddTaskClick, onAISuggestionsClick, onMenuClick, isDarkMode, onToggleTheme,
     notifications, notificationPermission, onMarkAllNotificationsAsRead, onRequestNotificationPermission,
-    syncStatus
+    syncStatus, onAddPropertyClick
 }) => {
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
   const [isNotificationsOpen, setNotificationsOpen] = useState(false);
@@ -180,7 +181,7 @@ export const Header: React.FC<HeaderProps> = ({
                                 {prop.name}
                             </a>
                         ))}
-                         <a href="#" className="block px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700">+ Add Property</a>
+                         <button onClick={() => { onAddPropertyClick(); setUserMenuOpen(false); }} className="w-full text-left block px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-700">+ Add Property</button>
                     </div>
                     <div className="border-t dark:border-slate-600 py-1">
                         <button onClick={onLogout} className="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700">

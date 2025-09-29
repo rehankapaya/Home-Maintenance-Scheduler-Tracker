@@ -89,7 +89,7 @@ export const Reports: React.FC<ReportsProps> = ({ tasks }) => {
             acc[task.category] = (acc[task.category] || 0) + 1;
             return acc;
         }, {} as Record<Category, number>);
-        return Object.entries(counts).map(([label, value]) => ({ label, value })).sort((a,b) => b.value - a.value);
+        return Object.entries(counts).map(([label, value]) => ({ label, value })).sort((a,b) => (b.value as number) - (a.value as number));
     }, [completedTasksInRange]);
     
     const byPriority = useMemo(() => {
@@ -114,7 +114,7 @@ export const Reports: React.FC<ReportsProps> = ({ tasks }) => {
             }
             return acc;
         }, {} as Record<Category, number>);
-        return Object.entries(costs).map(([label, value]) => ({ label, value })).sort((a,b) => b.value - a.value);
+        return Object.entries(costs).map(([label, value]) => ({ label, value })).sort((a,b) => (b.value as number) - (a.value as number));
     }, [completedTasksInRange]);
 
     

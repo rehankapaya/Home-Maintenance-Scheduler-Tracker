@@ -17,6 +17,7 @@ import { Tenants } from './components/Tenants';
 import { TenantModal } from './components/TenantModal';
 import { Awards } from './components/Awards';
 import { BadgeUnlockedToast } from './components/BadgeUnlockedToast';
+import { AddPropertyModal } from './components/AddPropertyModal';
 
 type ActiveView = 'dashboard' | 'providers' | 'inventory' | 'reports' | 'tenants' | 'awards';
 
@@ -52,6 +53,7 @@ const App: React.FC = () => {
   const [isProviderModalOpen, setProviderModalOpen] = useState(false);
   const [isInventoryModalOpen, setInventoryModalOpen] = useState(false);
   const [isTenantModalOpen, setTenantModalOpen] = useState(false);
+  const [isAddPropertyModalOpen, setAddPropertyModalOpen] = useState(false);
   
   // Edit states
   const [taskToEdit, setTaskToEdit] = useState<Task | undefined>(undefined);
@@ -254,8 +256,10 @@ const App: React.FC = () => {
   useEffect(() => {
      const user = userStore[MOCK_USER.id] || MOCK_USER;
      setCurrentUser(user);
-     setSelectedPropertyId(user.properties[0]?.id);
-  }, [userStore]);
+     if (user.properties.length > 0 && !selectedPropertyId) {
+        setSelectedPropertyId(user.properties[0].id);
+     }
+  }, [userStore, selectedPropertyId]);
 
   useEffect(() => {
     if (isDarkMode) document.documentElement.classList.add('dark');
@@ -290,6 +294,27 @@ const App: React.FC = () => {
   const updateUser = (updatedUser: User) => {
     setCurrentUser(updatedUser);
     setUserStore(prev => ({ ...prev, [updatedUser.id]: updatedUser }));
+  };
+
+  // Add Property
+  const handleAddProperty = (property: Omit<Property, 'id'>) => {
+    const newProperty: Property = {
+      ...property,
+      id: `prop-${Date.now()}`,
+    };
+
+    setCurrentUser(prevUser => {
+        if (!prevUser) return null;
+        const updatedUser = {
+            ...prevUser,
+            properties: [...prevUser.properties, newProperty],
+        };
+        setUserStore(prevStore => ({ ...prevStore, [updatedUser.id]: updatedUser }));
+        return updatedUser;
+    });
+
+    setSelectedPropertyId(newProperty.id); // Select the new property
+    setAddPropertyModalOpen(false);
   };
 
   // Task CRUD
@@ -532,6 +557,10 @@ const App: React.FC = () => {
     setTenantModalOpen(true);
   }, []);
 
+  const openAddPropertyModal = useCallback(() => {
+    setAddPropertyModalOpen(true);
+  }, []);
+
   const addSuggestedTasks = (newTasks: Omit<Task, 'id' | 'completed' | 'propertyId' | 'completedDate'>[]) => {
     if (!selectedPropertyId) return;
     const tasksToAdd: Task[] = newTasks.map(task => ({
@@ -569,6 +598,7 @@ const App: React.FC = () => {
     return <LoginScreen onLogin={() => handleLogin(MOCK_USER)} />;
   }
 
+  const currentProperty = currentUser.properties.find(p => p.id === selectedPropertyId);
   const displayedTasks = tasks.filter(task => task.propertyId === selectedPropertyId);
   const displayedInventory = inventoryItems.filter(item => item.propertyId === selectedPropertyId);
   const displayedTenants = tenants.filter(tenant => tenant.propertyId === selectedPropertyId);
@@ -585,6 +615,7 @@ const App: React.FC = () => {
           onLogout={handleLogout}
           onAddTaskClick={openAddTaskModal} 
           onAISuggestionsClick={() => setAISuggestionsModalOpen(true)}
+          onAddPropertyClick={openAddPropertyModal}
           onMenuClick={() => setSidebarOpen(!isSidebarOpen)}
           isDarkMode={isDarkMode}
           onToggleTheme={handleToggleTheme}
@@ -667,6 +698,7 @@ const App: React.FC = () => {
           onClose={() => setAISuggestionsModalOpen(false)}
           onAddTasks={addSuggestedTasks}
           isOnline={isOnline}
+          currentPropertyDescription={currentProperty?.description || ''}
         />
       )}
 
@@ -699,6 +731,15 @@ const App: React.FC = () => {
             tenantToEdit={tenantToEdit}
         />
       )}
+
+      {isAddPropertyModalOpen && (
+        <AddPropertyModal
+          isOpen={isAddPropertyModalOpen}
+          onClose={() => setAddPropertyModalOpen(false)}
+          onAddProperty={handleAddProperty}
+        />
+      )}
+
        {newlyUnlockedBadge && (
         <BadgeUnlockedToast
           badge={newlyUnlockedBadge}

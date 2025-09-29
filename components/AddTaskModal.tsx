@@ -73,7 +73,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onA
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-        const newAttachments: Attachment[] = Array.from(e.target.files).map(file => ({
+        const newAttachments: Attachment[] = Array.from(e.target.files).map((file: File) => ({
             id: `att-${Date.now()}-${Math.random()}`,
             fileName: file.name,
             fileType: file.type,
