@@ -45,7 +45,7 @@ const RecommendationCard: React.FC<{
                 <button onClick={() => onDismiss(recommendation.taskName)} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white transition-colors p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-slate-700" aria-label="Dismiss recommendation">
                     <XMarkIcon className="w-5 h-5" />
                 </button>
-                <button onClick={() => onAddTask(recommendation)} className="flex items-center space-x-2 px-3 py-1.5 text-sm font-medium text-white bg-primary rounded-md hover:bg-indigo-700 transition-colors">
+                <button onClick={() => onAddTask(recommendation)} className="flex items-center space-x-2 px-3 py-1.5 text-sm font-medium text-white bg-primary rounded-md hover:bg-green-700 transition-colors">
                     <PlusIcon className="w-4 h-4" />
                     <span>Add Task</span>
                 </button>
@@ -110,7 +110,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
     return (
         <div className="text-center py-16 px-6 bg-white dark:bg-dark-card rounded-lg shadow-sm flex flex-col items-center h-full justify-center">
             <HomeIcon className="w-20 h-20 mx-auto text-gray-300 dark:text-gray-600" />
-            <h2 className="mt-4 text-2xl font-bold text-gray-800 dark:text-white">Welcome to Homely!</h2>
+            <h2 className="mt-4 text-2xl font-bold text-gray-800 dark:text-white">Welcome to Homegevity!</h2>
             <p className="mt-2 text-lg text-gray-500 dark:text-gray-400">
                 It looks like you don't have any properties yet.
             </p>
@@ -119,7 +119,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </p>
             <button
                 onClick={onAddProperty}
-                className="mt-8 flex items-center mx-auto space-x-2 px-6 py-3 text-base font-medium text-white bg-primary rounded-md hover:bg-indigo-700 transition-colors shadow-sm"
+                className="mt-8 flex items-center mx-auto space-x-2 px-6 py-3 text-base font-medium text-white bg-primary rounded-md hover:bg-green-700 transition-colors shadow-sm"
             >
                 <PlusIcon className="w-5 h-5" />
                 <span>Add Your First Property</span>

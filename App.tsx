@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
@@ -286,9 +287,10 @@ const App: React.FC = () => {
   };
   
   const handleLogin = (email: string, password?: string): boolean => {
-    // FIX: Explicitly type `u` as `User` to help TypeScript's type inference.
-    const user = Object.values(userStore).find(
-      (u: User) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
+    // FIX: The result of Object.values was being inferred as unknown[], causing `user` to be `unknown`.
+    // By casting to User[], TypeScript can correctly infer `user` as `User | undefined`.
+    const user = (Object.values(userStore) as User[]).find(
+      (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
     );
 
     if (user) {

@@ -1,7 +1,7 @@
 
 
 import React, { useState } from 'react';
-import { HomeIcon } from './icons';
+import { LogoIcon } from './icons';
 import { User, UserRole } from '../types';
 
 interface LoginScreenProps {
@@ -62,12 +62,12 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, onSignup }) =
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
                     <div className="flex items-center justify-center space-x-2">
-                        <HomeIcon className="w-10 h-10 text-primary" />
-                        <span className="text-4xl font-bold text-gray-800 dark:text-white">
-                            Homely
+                        <LogoIcon className="w-12 h-12" />
+                        <span className="text-4xl font-bold">
+                           <span className="text-primary">Home</span><span className="text-secondary">gevity</span>
                         </span>
                     </div>
-                    <p className="text-gray-500 dark:text-gray-400 mt-2">Your home maintenance, simplified.</p>
+                    <p className="text-gray-500 dark:text-gray-400 mt-2">Longevity for your home.</p>
                 </div>
 
                 <div className="bg-white dark:bg-dark-card shadow-lg rounded-xl p-8">
@@ -109,7 +109,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, onSignup }) =
                         <div className="mt-6">
                             <button
                                 type="submit"
-                                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                             >
                                 {isLogin ? 'Log In' : 'Sign Up'}
                             </button>
@@ -117,7 +117,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, onSignup }) =
                     </form>
 
                     <div className="mt-6 text-center">
-                        <button onClick={toggleForm} className="text-sm font-medium text-primary hover:text-indigo-500">
+                        <button onClick={toggleForm} className="text-sm font-medium text-primary hover:text-green-500">
                            {isLogin ? "Don't have an account? Sign up" : "Already have an account? Log in"}
                         </button>
                     </div>

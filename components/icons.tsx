@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Category } from '../types';
 
@@ -205,5 +206,55 @@ const CategoryIcon: React.FC<{ category: Category | 'General Contractor'; classN
       return <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-1.008 1.11-1.226a2.25 2.25 0 0 1 2.58 1.226l.218.544a1.125 1.125 0 0 0 1.258.625 1.125 1.125 0 0 1 .913 1.115l-.27 1.348a1.125 1.125 0 0 0 .15.986l.636.796a1.125 1.125 0 0 1-.363 1.76l-1.46.696a1.125 1.125 0 0 0-.583 1.192l.235 1.47a1.125 1.125 0 0 1-1.436 1.18l-1.52-.428a1.125 1.125 0 0 0-1.176 0l-1.52.428a1.125 1.125 0 0 1-1.436-1.18l.235-1.47a1.125 1.125 0 0 0-.583-1.192l-1.46-.696a1.125 1.125 0 0 1-.363-1.76l.636-.796a1.125 1.125 0 0 0 .15-.986l-.27-1.348a1.125 1.125 0 0 1 .913-1.115 1.125 1.125 0 0 0 1.258-.625l.218-.544Z" /></svg>;
   }
 };
+
+export const LogoIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 200 200"
+      className={className}
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id="logo-leaf-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#8DC63F" />
+          <stop offset="50%" stopColor="#C4D63B" />
+          <stop offset="100%" stopColor="#FDBB30" />
+        </linearGradient>
+      </defs>
+      <g>
+        {/* Shield */}
+        <path
+          d="M100 10 C 30 20, 25 150, 100 190 C 175 150, 170 20, 100 10 Z"
+          fill="#4d5358"
+        />
+        {/* Leaf */}
+        <path
+          d="M40,150 C40,150 100,80 170,120 C170,120 120,180 40,150 Z"
+          fill="url(#logo-leaf-gradient)"
+        />
+        {/* House */}
+        <path
+          d="M100,45 L70,75 L130,75 Z"
+          fill="#006837"
+        />
+        <path
+          d="M75,75 L75,130 L125,130 L125,75 Z"
+          fill="#006837"
+        />
+        {/* Windows */}
+        <rect x="85" y="90" width="15" height="15" fill="#fff" />
+        <rect x="110" y="90" width="15" height="15" fill="#fff" />
+         {/* Checkmark */}
+        <path
+          d="M150 55 l5 5 l10 -10"
+          stroke="#FDBB30"
+          strokeWidth="8"
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </g>
+    </svg>
+  );
 
 export default CategoryIcon;

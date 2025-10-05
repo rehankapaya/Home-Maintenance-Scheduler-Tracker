@@ -1,7 +1,7 @@
 
 
 import React from 'react';
-import { HomeIcon, UserGroupIcon, BoxArchiveIcon, ChartBarIcon, BriefcaseIcon, TrophyIcon } from './icons';
+import { HomeIcon, UserGroupIcon, BoxArchiveIcon, ChartBarIcon, BriefcaseIcon, TrophyIcon, LogoIcon } from './icons';
 
 type ActiveView = 'dashboard' | 'providers' | 'inventory' | 'reports' | 'tenants' | 'awards';
 
@@ -52,9 +52,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeView,
       >
         <div className="flex items-center justify-center h-16 border-b dark:border-slate-700">
            <div className="flex items-center space-x-2">
-            <HomeIcon className="w-8 h-8 text-primary" />
-            <span className="text-2xl font-bold text-gray-800 dark:text-white">
-              Homely
+            <LogoIcon className="w-8 h-8" />
+            <span className="text-2xl font-bold">
+              <span className="text-primary">Home</span><span className="text-secondary">gevity</span>
             </span>
           </div>
         </div>
@@ -82,7 +82,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, activeView,
         </nav>
         <div className="p-4 border-t dark:border-slate-700">
             <div className="text-xs text-center text-gray-500 dark:text-gray-400">
-                &copy; 2024 Homely Inc.
+                &copy; 2024 Homegevity Inc.
             </div>
         </div>
       </aside>
